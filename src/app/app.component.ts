@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { AuthTgComponent } from './auth-tg/auth-tg.component';
+import { MainComponent } from './main/main.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [AuthTgComponent, MainComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'cryptoapp-front';
+  public title = 'cryptoapp-front';
+
+  constructor() {}
 }
