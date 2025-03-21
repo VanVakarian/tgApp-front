@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, OnInit, computed, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -8,49 +8,60 @@ import { AuthService } from '../auth.service';
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   imports: [FormsModule, CommonModule],
-  standalone: true,
 })
 export class AuthComponent implements OnInit {
-  username = '';
-  password = '';
-  authStatus = '';
-  isAuthenticated = false;
+  protected username = signal('');
+  protected password = signal('');
+  protected authStatus = signal('');
+  protected isLoading = signal(false);
+  protected isAuthenticated = computed(() => this.authService.isAuthenticated());
+
+  private previousAuthState = false;
 
   constructor(private authService: AuthService, private router: Router) {
     effect(() => {
-      this.isAuthenticated = this.authService.authenticationStatus$();
+      const currentAuthState = this.isAuthenticated();
+      if (currentAuthState && !this.previousAuthState) {
+        this.router.navigate(['/']);
+      }
+      this.previousAuthState = currentAuthState;
     });
   }
 
-  ngOnInit() {
-    this.isAuthenticated = this.authService.checkAuth();
-    if (this.isAuthenticated) {
+  public ngOnInit() {
+    if (this.isAuthenticated()) {
       const savedUsername = this.authService.getUsername();
       if (savedUsername) {
-        this.username = savedUsername;
+        this.username.set(savedUsername);
       }
     }
   }
 
-  submitCredentials() {
-    this.authService.login(this.username, this.password).subscribe({
-      next: (response: any) => {
-        console.log('Credentials submitted successfully', response);
-        this.isAuthenticated = true;
-        this.authStatus = '';
-      },
-      error: (error: any) => {
-        console.error('Error submitting credentials', error);
-        this.authStatus = 'Error submitting credentials';
-      },
-    });
+  protected async submitCredentials() {
+    if (!this.username() || !this.password()) {
+      this.authStatus.set('Please fill in all fields');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.authStatus.set('');
+
+    try {
+      await this.authService.login(this.username(), this.password());
+      this.password.set('');
+    } catch (error) {
+      console.error('Error submitting credentials', error);
+      this.authStatus.set(error instanceof Error ? error.message : 'Error submitting credentials');
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
-  logout() {
+  protected logout() {
     this.authService.logout();
-    this.username = '';
-    this.password = '';
-    this.authStatus = '';
-    this.isAuthenticated = false;
+    this.username.set('');
+    this.password.set('');
+    this.authStatus.set('');
+    // this.router.navigate(['/auth']);
   }
 }

@@ -5,10 +5,9 @@ import { MainComponent } from './main/main.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [AuthTgComponent, MainComponent, AuthComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
+  imports: [AuthTgComponent, MainComponent, AuthComponent],
 })
 export class AppComponent {
   public title = 'cryptoapp-front';
