@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "cryptoapp-front": {
+    "tg-app-front": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/cryptoapp-front",
+            "outputPath": "dist/tg-app-front",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "cryptoapp-front:build:production"
+              "buildTarget": "tg-app-front:build:production"
             },
             "development": {
-              "buildTarget": "cryptoapp-front:build:development"
+              "buildTarget": "tg-app-front:build:development"
             }
           },
           "defaultConfiguration": "development",

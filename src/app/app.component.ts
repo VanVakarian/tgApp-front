@@ -10,7 +10,7 @@ import { MainComponent } from './main/main.component';
   imports: [AuthTgComponent, MainComponent, AuthComponent],
 })
 export class AppComponent {
-  public title = 'cryptoapp-front';
+  public title = 'tg-app-front';
 
   constructor() {}
 }

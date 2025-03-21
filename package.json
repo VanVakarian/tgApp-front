@@ -1,5 +1,5 @@
 {
-  "name": "cryptoapp-front",
+  "name": "tg-app-front",
   "version": "0.2.0",
   "scripts": {
     "ng": "ng",
