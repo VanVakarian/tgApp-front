@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
+import { AuthService } from '../auth.service';
 import { TelegramAuthService } from '../tg-auth.service';
 
 @Component({
@@ -10,91 +11,82 @@ import { TelegramAuthService } from '../tg-auth.service';
   standalone: true,
   imports: [FormsModule, CommonModule],
 })
-export class AuthTgComponent implements OnInit, OnDestroy {
-  phone = '';
-  password = '';
-  code = '';
-  showCodeInput = false;
-  authStatus = '';
-  error = '';
+export class AuthTgComponent implements OnDestroy {
+  protected phone = '';
+  protected password = '';
+  protected code = '';
+  protected showCodeInput = false;
+  protected authStatus = '';
+  protected error = '';
 
   private subscription: Subscription = new Subscription();
 
-  constructor(private telegramAuthService: TelegramAuthService) {}
-
-  ngOnInit(): void {
-    this.telegramAuthService.connectToSSE();
-
-    this.subscription.add(
-      this.telegramAuthService.sseEvents$.subscribe((event: any) => {
-        console.log('Telegram SSE event', event);
-
-        if (event.event === 'auth_required') {
-          this.resetForm();
-          this.error = event.data;
-        } else if (event.event === 'auth_status') {
-          if (event.data === 'success') {
-            this.authStatus = 'Авторизация успешна';
-            this.showCodeInput = false;
-            this.error = '';
-          } else if (event.data.startsWith('failure:')) {
-            this.error = event.data.substring(9);
-            this.resetForm();
-          }
-        }
-      })
-    );
-
-    this.subscription.add(
-      this.telegramAuthService.isAuthorized$.subscribe((isAuth) => {
-        if (!isAuth) {
-          this.resetForm();
-        }
-      })
-    );
+  protected get isTgAuthenticated(): boolean {
+    return this.telegramAuthService.isAuthenticated();
   }
 
-  ngOnDestroy(): void {
+  constructor(protected telegramAuthService: TelegramAuthService, private authService: AuthService) {
+    if (this.authService.isAuthenticated()) {
+      this.connectSSE();
+    }
+  }
+
+  public ngOnDestroy(): void {
     this.telegramAuthService.disconnectSSE();
     this.subscription.unsubscribe();
   }
 
-  submitCredentials() {
-    this.error = '';
-    this.telegramAuthService.submitCredentials(this.phone, this.password).subscribe({
-      next: (response: any) => {
-        console.log('Telegram credentials response:', response);
-        if (response.requiresCode) {
-          this.showCodeInput = true;
-          this.authStatus = 'Введите код подтверждения';
-        } else if (response.event === 'auth_status' && response.data === 'success') {
-          this.authStatus = 'Авторизация успешна';
-        }
-      },
-      error: (error: any) => {
-        console.error('Error submitting Telegram credentials', error);
-        this.error = error.error?.data || 'Ошибка при отправке учетных данных';
-        this.resetForm();
-      },
-    });
+  protected async submitCredentials(): Promise<void> {
+    try {
+      this.error = '';
+      const response = await firstValueFrom(this.telegramAuthService.submitCredentials(this.phone, this.password));
+
+      if (!response.success) {
+        this.error = response.message || 'Ошибка авторизации';
+        return;
+      }
+
+      if (response.requiresCode) {
+        this.showCodeInput = true;
+        this.authStatus = 'Введите код подтверждения';
+      }
+    } catch (error: any) {
+      console.error('Error submitting Telegram credentials', error);
+      this.error = error.error?.message || 'Ошибка при отправке учетных данных';
+      this.resetForm();
+    }
   }
 
-  submitCode() {
-    this.error = '';
-    this.telegramAuthService.submitCode(this.code, this.phone).subscribe({
-      next: (response: any) => {
-        console.log('Telegram code response:', response);
-        if (response.event === 'auth_status' && response.data === 'success') {
-          this.authStatus = 'Авторизация успешна';
-          this.showCodeInput = false;
+  protected async submitCode(): Promise<void> {
+    try {
+      this.error = '';
+      const response = await firstValueFrom(this.telegramAuthService.submitCode(this.code));
+
+      if (!response.success) {
+        this.error = response.message || 'Ошибка авторизации';
+        return;
+      }
+
+      this.showCodeInput = false;
+      this.telegramAuthService.isAuthenticated.set(true);
+    } catch (error: any) {
+      console.error('Error submitting Telegram code', error);
+      this.error = error.error?.message || 'Ошибка при отправке кода';
+      this.resetForm();
+    }
+  }
+
+  private async connectSSE(): Promise<void> {
+    this.telegramAuthService.connectToSSE();
+
+    this.subscription.add(
+      this.telegramAuthService.sseEvents$.subscribe((event) => {
+        if (event.event === 'auth_required') {
+          this.resetForm();
+          this.error = event.data;
         }
-      },
-      error: (error: any) => {
-        console.error('Error submitting Telegram code', error);
-        this.error = error.error?.data || 'Ошибка при отправке кода';
-        this.resetForm();
-      },
-    });
+      })
+    );
   }
 
   private resetForm() {

@@ -1,7 +1,10 @@
 <div class="flex h-screen bg-gray-100">
-  <app-main class="flex-grow"></app-main>
+  <app-main class="flex-grow" />
   <div class="flex flex-col">
-    <app-auth></app-auth>
-    <app-auth-tg></app-auth-tg>
+    <app-auth />
+
+    @if (isAuthenticated) {
+      <app-auth-tg />
+    }
   </div>
 </div>

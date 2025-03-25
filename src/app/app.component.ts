@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthTgComponent } from './auth-tg/auth-tg.component';
+import { AuthService } from './auth.service';
 import { AuthComponent } from './auth/auth.component';
 import { MainComponent } from './main/main.component';
 
@@ -10,7 +11,9 @@ import { MainComponent } from './main/main.component';
   imports: [AuthTgComponent, MainComponent, AuthComponent],
 })
 export class AppComponent {
-  public title = 'tg-app-front';
+  protected get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
 
-  constructor() {}
+  constructor(protected authService: AuthService) {}
 }
