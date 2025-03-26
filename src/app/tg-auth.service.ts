@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 enum TgAuthRoutes {
   CREDS = '/api/auth-tg/creds',
   CODE = '/api/auth-tg/code',
+  CLEAR = '/api/auth-tg/clear',
   SSE = '/api/auth-tg/sse',
 }
 
@@ -82,6 +83,18 @@ export class TelegramAuthService {
       tap((response) => {
         if (response.success) {
           this.isAuthenticated.set(true);
+        }
+      })
+    );
+  }
+
+  public logout(): Observable<TelegramAuthResponse> {
+    const accessToken = this.authService.getAccessToken();
+    const headers = new HttpHeaders(accessToken ? { Authorization: `Bearer ${accessToken}` } : {});
+    return this.http.post<TelegramAuthResponse>(TgAuthRoutes.CLEAR, {}, { headers }).pipe(
+      tap((response) => {
+        if (response.success) {
+          this.isAuthenticated.set(false);
         }
       })
     );

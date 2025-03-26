@@ -12,6 +12,14 @@
       <div class="p-3 mb-4 text-center text-green-700 bg-green-100 rounded">
         Авторизация выполнена
       </div>
+
+      <div class="flex justify-center">
+        <button class="hover:bg-red-700 focus:outline-none focus:shadow-outline px-4 py-2 font-bold text-white bg-red-500 rounded"
+                type="button"
+                (click)="logout()">
+          Выйти
+        </button>
+      </div>
     } @else {
 
       @if (authStatus) {
@@ -88,3 +96,5 @@
       }
 
     }
+  </div>
+</div>

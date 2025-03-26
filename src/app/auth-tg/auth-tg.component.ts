@@ -76,6 +76,23 @@ export class AuthTgComponent implements OnDestroy {
     }
   }
 
+  protected async logout(): Promise<void> {
+    try {
+      this.error = '';
+      const response = await firstValueFrom(this.telegramAuthService.logout());
+
+      if (!response.success) {
+        this.error = response.message || 'Ошибка при выходе из аккаунта';
+        return;
+      }
+
+      this.resetForm();
+    } catch (error: any) {
+      console.error('Error logging out from Telegram', error);
+      this.error = error.error?.message || 'Ошибка при выходе из аккаунта';
+    }
+  }
+
   private async connectSSE(): Promise<void> {
     this.telegramAuthService.connectToSSE();
 
