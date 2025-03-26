@@ -1,0 +1,100 @@
+<div class="flex flex-col items-center p-4 bg-gray-100">
+  <div class="w-full max-w-md p-6 bg-white rounded shadow-md">
+    <h6 class="mb-4 text-2xl font-bold text-center">Telegram Auth</h6>
+
+    @if (error) {
+      <div class="p-3 mb-4 text-red-700 bg-red-100 rounded">
+        {{ error }}
+      </div>
+    }
+
+    @if (isTgAuthenticated) {
+      <div class="p-3 mb-4 font-medium text-center text-green-700 bg-green-100 rounded">
+        Logged in
+      </div>
+
+      <div class="flex justify-center">
+        <button class="hover:bg-red-700 focus:outline-none focus:shadow-outline px-4 py-2 font-bold text-white bg-red-500 rounded"
+                type="button"
+                (click)="logout()">
+          Log out
+        </button>
+      </div>
+    } @else {
+
+      @if (authStatus) {
+        <div class="p-3 mb-4 text-center text-blue-700 bg-blue-100 rounded">
+          {{ authStatus }}
+        </div>
+      }
+
+      @if (!showCodeInput) {
+        <form (ngSubmit)="submitCredentials()"
+              class="space-y-4">
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700"
+                   for="tg-phone">
+              Phone number
+            </label>
+
+            <input class="focus:outline-none focus:ring-2 focus:ring-blue-500 w-full px-3 py-2 border border-gray-300 rounded"
+                   id="tg-phone"
+                   type="text"
+                   placeholder="+7..."
+                   [(ngModel)]="phone"
+                   name="phone"
+                   required />
+          </div>
+
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700"
+                   for="tg-password">
+              Password
+            </label>
+
+            <input class="focus:outline-none focus:ring-2 focus:ring-blue-500 w-full px-3 py-2 border border-gray-300 rounded"
+                   id="tg-password"
+                   type="password"
+                   placeholder="Enter password"
+                   [(ngModel)]="password"
+                   name="password"
+                   required />
+          </div>
+
+          <button type="submit"
+                  class="hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full px-4 py-2 font-medium text-white bg-blue-600 rounded"
+                  [disabled]="!phone || !password">
+            Log in
+          </button>
+        </form>
+      }
+
+      @if (showCodeInput) {
+        <form (ngSubmit)="submitCode()"
+              class="space-y-4">
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700"
+                   for="code">
+              Confirmation code
+            </label>
+
+            <input class="focus:outline-none focus:ring-2 focus:ring-blue-500 w-full px-3 py-2 border border-gray-300 rounded"
+                   id="code"
+                   type="text"
+                   placeholder="Enter code"
+                   [(ngModel)]="code"
+                   name="code"
+                   required />
+          </div>
+
+          <button type="submit"
+                  class="hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full px-4 py-2 font-medium text-white bg-blue-600 rounded"
+                  [disabled]="!code">
+            Confirm
+          </button>
+        </form>
+      }
+
+    }
+  </div>
+</div>
