@@ -1,12 +1,19 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { AuthTgComponent } from './auth-tg/auth-tg.component';
+import { AuthService } from './auth.service';
+import { AuthComponent } from './auth/auth.component';
+import { MainComponent } from './main/main.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.css',
+  imports: [AuthTgComponent, MainComponent, AuthComponent],
 })
 export class AppComponent {
-  title = 'cryptoapp-front';
+  protected get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+  constructor(protected authService: AuthService) {}
 }
