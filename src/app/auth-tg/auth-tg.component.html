@@ -9,15 +9,15 @@
     }
 
     @if (isTgAuthenticated) {
-      <div class="p-3 mb-4 text-center text-green-700 bg-green-100 rounded">
-        Авторизация выполнена
+      <div class="p-3 mb-4 font-medium text-center text-green-700 bg-green-100 rounded">
+        Logged in
       </div>
 
       <div class="flex justify-center">
         <button class="hover:bg-red-700 focus:outline-none focus:shadow-outline px-4 py-2 font-bold text-white bg-red-500 rounded"
                 type="button"
                 (click)="logout()">
-          Выйти
+          Log out
         </button>
       </div>
     } @else {
@@ -34,7 +34,7 @@
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-700"
                    for="tg-phone">
-              Номер телефона
+              Phone number
             </label>
 
             <input class="focus:outline-none focus:ring-2 focus:ring-blue-500 w-full px-3 py-2 border border-gray-300 rounded"
@@ -49,13 +49,13 @@
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-700"
                    for="tg-password">
-              Пароль
+              Password
             </label>
 
             <input class="focus:outline-none focus:ring-2 focus:ring-blue-500 w-full px-3 py-2 border border-gray-300 rounded"
                    id="tg-password"
                    type="password"
-                   placeholder="Введите пароль"
+                   placeholder="Enter password"
                    [(ngModel)]="password"
                    name="password"
                    required />
@@ -64,7 +64,7 @@
           <button type="submit"
                   class="hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full px-4 py-2 font-medium text-white bg-blue-600 rounded"
                   [disabled]="!phone || !password">
-            Войти
+            Log in
           </button>
         </form>
       }
@@ -75,13 +75,13 @@
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-700"
                    for="code">
-              Код подтверждения
+              Confirmation code
             </label>
 
             <input class="focus:outline-none focus:ring-2 focus:ring-blue-500 w-full px-3 py-2 border border-gray-300 rounded"
                    id="code"
                    type="text"
-                   placeholder="Введите код"
+                   placeholder="Enter code"
                    [(ngModel)]="code"
                    name="code"
                    required />
@@ -90,7 +90,7 @@
           <button type="submit"
                   class="hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full px-4 py-2 font-medium text-white bg-blue-600 rounded"
                   [disabled]="!code">
-            Подтвердить
+            Confirm
           </button>
         </form>
       }

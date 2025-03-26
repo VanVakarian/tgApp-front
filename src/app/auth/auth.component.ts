@@ -62,6 +62,5 @@ export class AuthComponent implements OnInit {
     this.username.set('');
     this.password.set('');
     this.authStatus.set('');
-    // this.router.navigate(['/auth']);
   }
 }
